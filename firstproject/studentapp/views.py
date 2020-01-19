@@ -7,8 +7,59 @@ from rest_framework.decorators import api_view
 from django.http import Http404
 
 from rest_framework.views import APIView
+from rest_framework import generics, mixins
+from rest_framework import viewsets
 # Create your views here.
 
+
+class StudentAPIView(viewsets.ModelViewSet):
+    queryset = Student.get_student.all()
+    serializer_class = StudentSerializers
+
+"""
+#generics based
+
+class StudentListView(generics.ListCreateAPIView):
+    queryset = Student.get_student.all()
+    serializer_class = StudentSerializers
+
+
+class StudentDetailedView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Student.get_student.all()
+    serializer_class = StudentSerializers
+
+"""
+"""
+# using mixins
+
+class StudentListView(mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView):
+    queryset = Student.get_student.all()
+    serializer_class = StudentSerializers
+
+    def get(self, request):
+        return self.list(request)
+
+    def post(self, request):
+        return self.create(request)
+
+
+class StudentDetailedView(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins.DestroyModelMixin, generics.GenericAPIView):
+    queryset = Student.get_student.all()
+    serializer_class = StudentSerializers
+
+    def get(self, request, pk):
+        return self.retrieve(request, pk)
+
+    def put(self, request, pk):
+        return self.update(request, pk)
+
+    def delete(self, request, pk):
+        return self.destroy(request, pk)
+
+"""
+"""
+
+#using class based views (APIView)
 
 class StudentListView(APIView):
 
@@ -59,6 +110,8 @@ class StudentDetailedView(APIView):
             return Response({'msg': 'deleted successfully..'}, status.HTTP_204_NO_CONTENT)
         return Response(status.HTTP_400_BAD_REQUEST)
 
+"""
+"""
 # function based
 
 # @api_view(['GET', 'POST'])
@@ -99,3 +152,4 @@ class StudentDetailedView(APIView):
 #         student.delete()
 #         return Response({'msg': 'request data deleted..'}, status=status.HTTP_204_NO_CONTENT)
 #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+"""
